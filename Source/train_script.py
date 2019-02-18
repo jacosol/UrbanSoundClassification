@@ -7,34 +7,59 @@ from torch import nn
 from torch.utils.data import DataLoader
 import torch.optim as optim
 from torch.autograd import Variable
-
+from torch.utils.data.sampler import SubsetRandomSampler
+import time
 
 trainpath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\train'
 testpath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\test'
 validationpath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\validation'
-savepath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings\\_feb17'
+savepath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings\\' + ''.join('_'.join(time.ctime().split()).split(':'))
+try:
+    os.mkdir(savepath)
+except:
+    print('directory already exists')
 resume = 1
 
 batch_size = 10
 epochs = 10
 
 DS = UrbanSoundDataset(trainpath, None, 'train')
-DS_test = UrbanSoundDataset(testpath, None, 'test')
-DS_validation = UrbanSoundDataset(validationpath, None, 'valid')
+
 num_train = len(DS)
+testval_fraction = 0.3
 indices = list(range(num_train))
+split_idx = int(num_train*(1-testval_fraction))
+train_idx = indices[:split_idx]
+
+train_sampler = SubsetRandomSampler(train_idx)
+
+indices_testval = indices[split_idx:]
+split_idx_testval = int(num_train*testval_fraction*0.5)
+val_idx = indices_testval[:split_idx_testval]
+test_idx = indices_testval[split_idx_testval:]
+
+val_sampler = SubsetRandomSampler(val_idx)
+test_sampler = SubsetRandomSampler(test_idx)
 
 # prepare data loaders (combine dataset and sampler)
-train_loader = DataLoader(DS, batch_size=batch_size, shuffle=True,
-                          drop_last=True)
-test_loader = DataLoader(DS_test, batch_size=batch_size, shuffle=True,
-                          drop_last=True)
+train_loader = DataLoader(DS, batch_size=batch_size,
+                          drop_last=True, sampler=train_sampler)
+val_loader = DataLoader(DS, batch_size=batch_size,
+                          drop_last=True, sampler=val_sampler)
+test_loader = DataLoader(DS, batch_size=batch_size,
+                          drop_last=True, sampler=test_sampler)
+
+#saves the sampler indeces for the specific training
+np.save(os.path.join(savepath, 'train_idx.npy'), np.array(train_idx))
+np.save(os.path.join(savepath, 'test_idx.npy'), np.array(test_idx))
+np.save(os.path.join(savepath, 'val_idx.npy'), np.array(val_idx))
+
+
 
 if resume:
-    model_with_val = torch.load('C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings\\_feb17\\model_epoch_9.pt')
+    model_with_val = torch.load('C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings\\_feb17\\best_model_epoch_9.pt')
     train_loss_overtime = np.load('C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings\\_feb17\\trainloss.npy')
     test_loss_overtime = np.load('C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings\\_feb17\\testloss.npy')
-
 else:
     train_loss_overtime = []
     test_loss_overtime = []
@@ -79,11 +104,11 @@ for e in range(epochs):
     ######################
     model_with_val.eval()
     status = 0
-    for data, target in test_loader:
+    for data, target in val_loader:
 
         status += 1
         if status % 2 == 0:
-            print(f'validating: {int (status*batch_size/len(test_loader.sampler)*100)}%')
+            print(f'validating: {int (status*batch_size/len(val_loader.sampler)*100)}%')
         # forward pass: compute predicted outputs by passing inputs to the model
         data = Variable(data.to('cuda'))
         output = model_with_val(data)
@@ -92,20 +117,21 @@ for e in range(epochs):
         # calculate the batch loss
         loss = criterion(output, target)
         # update average validation loss
-        valid_loss += loss.item() * data.size(0)
+        test_loss += loss.item() * data.size(0)
 
     # calculate average losses
     train_loss = train_loss / len(train_loader.dataset)
-    valid_loss = valid_loss / len(test_loader.dataset)
+    test_loss = test_loss / len(val_loader.dataset)
 
-    test_loss_overtime.append(valid_loss)
+    test_loss_overtime.append(test_loss)
     train_loss_overtime.append(train_loss)
 
     # print training/validation statistics
-    print('Epoch: {} \tTraining Loss: {:.6f} \tValidation Loss: {:.6f}'.format(
-        e, train_loss, valid_loss))
+    print('Epoch: {} \tTraining Loss: {:.6f} \tTest Loss: {:.6f}'.format(
+        e, train_loss, test_loss))
     if e > 0 and test_loss_overtime[e] < test_loss_overtime[e - 1]:
         torch.save(model_with_val, os.path.join(savepath, f'model_epoch_{e}.pt'))
 
-np.save(os.path.join(savepath, 'trainloss.npy'), np.array(train_loss_overtime))
-np.save(os.path.join(savepath, 'testloss.npy'), np.array(test_loss_overtime))
+    np.save(os.path.join(savepath, 'trainloss.npy'), np.array(train_loss_overtime))
+    np.save(os.path.join(savepath, 'testloss.npy'), np.array(test_loss_overtime))
+

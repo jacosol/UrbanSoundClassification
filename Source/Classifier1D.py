@@ -1,6 +1,6 @@
 import torch.nn.functional as F
 from torch import nn
-
+ 
 class Classifier1D(nn.Module):
 
     def __init__(self):
