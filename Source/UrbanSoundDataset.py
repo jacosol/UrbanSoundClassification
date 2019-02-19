@@ -32,6 +32,8 @@ class UrbanSoundDataset(Dataset):
     def __getitem__(self, index):
         sampleID = self.files[index].split(os.sep)[-1].split('.')[0]
         sample, sr = lb.load(self.files[index], sr=5000, mono=True)
+        sample = sample - np.mean(sample)
+        sample = sample / np.std(sample)
         if len(sample) < self.sample_len:
             sample = np.insert(sample, len(sample), np.zeros(self.sample_len - len(sample)))
         if len(sample) > self.sample_len:

@@ -1,5 +1,6 @@
 from UrbanSoundDataset import *
 from Classifier1D import *
+from FullyConnected import *
 import torch
 import os
 import numpy as np
@@ -13,12 +14,12 @@ import time
 trainpath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\train'
 testpath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\test'
 validationpath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\validation'
-savepath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings\\' + ''.join('_'.join(time.ctime().split()).split(':'))
+savepath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings\\' + ''.join('_'.join(time.ctime().split()).split(':')) + '_FC'
 try:
     os.mkdir(savepath)
 except:
     print('directory already exists')
-resume = 1
+resume = 0
 
 batch_size = 10
 epochs = 10
@@ -57,13 +58,16 @@ np.save(os.path.join(savepath, 'val_idx.npy'), np.array(val_idx))
 
 
 if resume:
-    model_with_val = torch.load('C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings\\_feb17\\best_model_epoch_9.pt')
-    train_loss_overtime = np.load('C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings\\_feb17\\trainloss.npy')
-    test_loss_overtime = np.load('C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings\\_feb17\\testloss.npy')
+    model_with_val = torch.load(r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\_feb18Mon_Feb_18_160248_2019\model_epoch_8.pt')
+    train_loss_overtime = list(np.load(r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\_feb18Mon_Feb_18_160248_2019\trainloss.npy'))
+    test_loss_overtime = list(np.load(r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\_feb18Mon_Feb_18_160248_2019\testloss.npy'))
+    starting_epoch = 8
 else:
     train_loss_overtime = []
     test_loss_overtime = []
-    model_with_val = Classifier1D()
+    #model_with_val = Classifier1D()
+    model_with_val = FullyConnected()
+    starting_epoch = 0
 model_with_val.to('cuda')
 
 # train script with validation
@@ -71,9 +75,7 @@ model_with_val.to('cuda')
 criterion = nn.NLLLoss()
 optimizer = optim.Adam(model_with_val.parameters())
 
-train_loss_overtime = []
-test_loss_overtime = []
-for e in range(epochs):
+for e in range(starting_epoch, starting_epoch + epochs):
 
     train_loss = 0.0
     test_loss = 0.0
@@ -129,7 +131,7 @@ for e in range(epochs):
     # print training/validation statistics
     print('Epoch: {} \tTraining Loss: {:.6f} \tTest Loss: {:.6f}'.format(
         e, train_loss, test_loss))
-    if e > 0 and test_loss_overtime[e] < test_loss_overtime[e - 1]:
+    if e > starting_epoch and test_loss_overtime[e] < test_loss_overtime[e - 1]:
         torch.save(model_with_val, os.path.join(savepath, f'model_epoch_{e}.pt'))
 
     np.save(os.path.join(savepath, 'trainloss.npy'), np.array(train_loss_overtime))
