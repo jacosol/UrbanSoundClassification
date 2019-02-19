@@ -8,19 +8,25 @@ class Classifier1D(nn.Module):
         self.conv1 = nn.Conv1d(1, 16, 5, padding=2)
         self.conv2 = nn.Conv1d(16, 32, 5, padding=2)
         self.conv3 = nn.Conv1d(32, 64, 5, padding=2)
+        self.conv4 = nn.Conv1d(64, 128, 5, padding=2)
+        self.conv5 = nn.Conv1d(128, 256, 5, padding=2)
 
         self.pool = nn.MaxPool1d(4, 4)
         # linear layer
-        self.fc1 = nn.Linear(int(19968), 300)
+        self.fc1 = nn.Linear(int(9984), 100)
         # linear layer (500 -> 10)
-        self.fc2 = nn.Linear(300, 10)
+        self.fc2 = nn.Linear(100, 10)
         # dropout layer (p=0.25)
         self.dropout = nn.Dropout(0.3)
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
+        x = self.dropout(x)
         x = self.pool(F.relu(self.conv2(x)))
+        x = self.dropout(x)
         x = self.pool(F.relu(self.conv3(x)))
+        x = self.dropout(x)
+        x = self.pool(F.relu(self.conv4(x)))
 
         # flatten audio input
         x = x.view(10, -1)

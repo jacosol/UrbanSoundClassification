@@ -22,7 +22,7 @@ class UrbanSoundDataset(Dataset):
         elif self.model_mode == 'test':
             self.infos = pd.read_csv(os.path.join(self.path, 'test.csv'))
             self.classes = sorted(set(self.infos.Class))
-        elif self.model_mode == 'validation':
+        elif self.model_mode == 'submission':
             self.infos = []
         else:
             print('WARNING: the train_or_test argument should be a string <train> or <test> ')
@@ -49,7 +49,7 @@ class UrbanSoundDataset(Dataset):
             label = torch.LongTensor([label])[0][0]
             return (sample, label)
         else:
-            return(sample)
+            return(sample, sampleID)
 
     def __len__(self):
         return self.len

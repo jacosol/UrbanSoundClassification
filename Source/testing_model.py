@@ -4,6 +4,7 @@ import os
 import numpy as np
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
+import pandas as pd
 from  tkinter import *
 import tkinter.filedialog
 
@@ -13,9 +14,10 @@ import tkinter.filedialog
 # loadpath = tkinter.filedialog.askdirectory()
 # root.destroy()
 
-loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\Mon_Feb_18_203600_2019'
-loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\Mon_Feb_18_223935_2019_FC'
-modelname = 'model_epoch_10.pt'
+# load the model
+loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\Tue_Feb_19_152355_2019_1DCNN_ONELAYERLESS'
+#loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\Mon_Feb_18_160248_2019'
+modelname = 'model_epoch_3.pt'
 model = os.path.join(loadpath, modelname)
 model = torch.load(model)
 model.to('cuda')
@@ -34,6 +36,7 @@ test_loader = DataLoader(DS, batch_size=batch_size,
                           drop_last=True, sampler=test_sampler)
 
 
+
 accuracy = 0
 counter = 0
 for sample, label in test_loader:
@@ -46,6 +49,9 @@ for sample, label in test_loader:
     accuracy += sum(sum(predictions.cpu().numpy() == 0))
     if counter % 10 ==0:
         print(counter*batch_size/len(test_idx))
+
+
+
 
 accuracy = accuracy/len(test_idx)
 print(f'Accuracy on the test set for {modelname} : {accuracy}')

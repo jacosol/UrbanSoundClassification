@@ -14,7 +14,7 @@ import time
 trainpath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\train'
 testpath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\test'
 validationpath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\validation'
-savepath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings\\' + ''.join('_'.join(time.ctime().split()).split(':')) + '_FC'
+savepath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings\\' + ''.join('_'.join(time.ctime().split()).split(':')) + '_1DCNN_ONEMORELAYER'
 try:
     os.mkdir(savepath)
 except:
@@ -65,11 +65,11 @@ if resume:
 else:
     train_loss_overtime = []
     test_loss_overtime = []
-    #model_with_val = Classifier1D()
-    model_with_val = FullyConnected()
+    model_with_val = Classifier1D()
+    #model_with_val = FullyConnected()
     starting_epoch = 0
 model_with_val.to('cuda')
-
+print(model_with_val)
 # train script with validation
 
 criterion = nn.NLLLoss()
@@ -129,11 +129,11 @@ for e in range(starting_epoch, starting_epoch + epochs):
     train_loss_overtime.append(train_loss)
 
     # print training/validation statistics
-    print('Epoch: {} \tTraining Loss: {:.6f} \tTest Loss: {:.6f}'.format(
+    print('Epoch: {} \tTraining Loss: {:.6f} \tValidation Loss: {:.6f}'.format(
         e, train_loss, test_loss))
     if e > starting_epoch and test_loss_overtime[e] < test_loss_overtime[e - 1]:
         torch.save(model_with_val, os.path.join(savepath, f'model_epoch_{e}.pt'))
 
     np.save(os.path.join(savepath, 'trainloss.npy'), np.array(train_loss_overtime))
-    np.save(os.path.join(savepath, 'testloss.npy'), np.array(test_loss_overtime))
+    np.save(os.path.join(savepath, 'validationloss.npy'), np.array(test_loss_overtime))
 
