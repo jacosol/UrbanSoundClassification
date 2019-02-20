@@ -30,9 +30,9 @@ classes = ['air_conditioner',
 
 # load the model
 #loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\Mon_Feb_18_203600_2019'
-loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\Tue_Feb_19_152355_2019_1DCNN_ONELAYERLESS'
+loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\Tue_Feb_19_173459_2019_1DCNN_twoMORELAYERandDO'
 #loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\Mon_Feb_18_160248_2019'
-modelname = 'model_epoch_3.pt'
+modelname = 'model_epoch_13.pt'
 model = os.path.join(loadpath, modelname)
 model = torch.load(model)
 model.to('cuda')

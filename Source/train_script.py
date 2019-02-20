@@ -14,7 +14,7 @@ import time
 trainpath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\train'
 testpath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\test'
 validationpath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\validation'
-savepath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings\\' + ''.join('_'.join(time.ctime().split()).split(':')) + '_1DCNN_ONEMORELAYER'
+savepath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings\\' + ''.join('_'.join(time.ctime().split()).split(':')) + '_1DCNN_twoMORELAYERandDOonemoreFC'
 try:
     os.mkdir(savepath)
 except:
@@ -58,10 +58,11 @@ np.save(os.path.join(savepath, 'val_idx.npy'), np.array(val_idx))
 
 
 if resume:
-    model_with_val = torch.load(r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\_feb18Mon_Feb_18_160248_2019\model_epoch_8.pt')
-    train_loss_overtime = list(np.load(r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\_feb18Mon_Feb_18_160248_2019\trainloss.npy'))
-    test_loss_overtime = list(np.load(r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\_feb18Mon_Feb_18_160248_2019\testloss.npy'))
-    starting_epoch = 8
+    savepath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\Tue_Feb_19_173459_2019_1DCNN_twoMORELAYERandDO'
+    model_with_val = torch.load(os.path.join(savepath,'model_epoch_3.pt'))
+    train_loss_overtime = list(np.load(os.path.join(savepath,'trainloss.npy')))
+    test_loss_overtime = list(np.load(os.path.join(savepath,'validationloss.npy')))
+    starting_epoch = 4
 else:
     train_loss_overtime = []
     test_loss_overtime = []
@@ -73,7 +74,7 @@ print(model_with_val)
 # train script with validation
 
 criterion = nn.NLLLoss()
-optimizer = optim.Adam(model_with_val.parameters())
+optimizer = optim.Adam(model_with_val.parameters(), lr=0.0001)
 
 for e in range(starting_epoch, starting_epoch + epochs):
 
@@ -131,7 +132,7 @@ for e in range(starting_epoch, starting_epoch + epochs):
     # print training/validation statistics
     print('Epoch: {} \tTraining Loss: {:.6f} \tValidation Loss: {:.6f}'.format(
         e, train_loss, test_loss))
-    if e > starting_epoch and test_loss_overtime[e] < test_loss_overtime[e - 1]:
+    if e > starting_epoch and test_loss_overtime[e-starting_epoch] < min(test_loss_overtime[:-1]):
         torch.save(model_with_val, os.path.join(savepath, f'model_epoch_{e}.pt'))
 
     np.save(os.path.join(savepath, 'trainloss.npy'), np.array(train_loss_overtime))
