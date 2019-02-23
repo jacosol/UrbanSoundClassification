@@ -1,7 +1,5 @@
-from UrbanSoundDataset import *
-from UrbanSoundDataset_aug import *
-from Classifier1D import *
-from FullyConnected import *
+from UrbanSoundDataset2D_aug import *
+from Classifier2D import *
 import torch
 import os
 import numpy as np
@@ -13,9 +11,7 @@ from torch.utils.data.sampler import SubsetRandomSampler
 import time
 
 trainpath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\train'
-testpath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\test'
-validationpath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\validation'
-savepath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings\\' + ''.join('_'.join(time.ctime().split()).split(':')) + '_1DCNN_longersamples'
+savepath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings2D\\' + ''.join('_'.join(time.ctime().split()).split(':')) + '_1DCNN_longersamples'
 resume = 0
 if not resume:
     try:
@@ -23,11 +19,10 @@ if not resume:
     except:
         print('directory already exists')
 
-
 batch_size = 10
 epochs = 100
 
-DS = UrbanSoundDataset_aug(trainpath, None, 'train')
+DS = UrbanSoundDataset2D_aug(trainpath, None, 'train')
 
 num_train = len(DS)
 testval_fraction = 0.3
@@ -51,12 +46,9 @@ train_loader = DataLoader(DS, batch_size=batch_size,
                           drop_last=True, sampler=train_sampler)
 val_loader = DataLoader(DS, batch_size=batch_size,
                           drop_last=True, sampler=val_sampler)
-test_loader = DataLoader(DS, batch_size=batch_size,
-                          drop_last=True, sampler=test_sampler)
-
 
 if resume:
-    savepath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\Fri_Feb_22_180608_2019_1DCNN_3layers_shorteersmaples'
+    savepath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings2D\Fri_Feb_22_180608_2019_1DCNN_3layers_shorteersmaples'
     model_with_val = torch.load(os.path.join(savepath,'model_epoch_0.pt'))
     try:
         train_loss_overtime = list(np.load(os.path.join(savepath,'trainloss.npy')))
@@ -68,8 +60,7 @@ if resume:
 else:
     train_loss_overtime = []
     test_loss_overtime = []
-    model_with_val = Classifier1D()
-    #model_with_val = FullyConnected()
+    model_with_val = Classifier2D()
     starting_epoch = 0
 
 #saves the sampler indeces for the specific training
@@ -84,7 +75,7 @@ print(model_with_val)
 # train script with validation
 
 criterion = nn.NLLLoss()
-optimizer = optim.Adam(model_with_val.parameters(), lr=0.00051)
+optimizer = optim.Adam(model_with_val.parameters(), lr=0.00075)
 
 for e in range(starting_epoch, starting_epoch + epochs):
 

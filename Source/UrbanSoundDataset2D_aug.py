@@ -4,12 +4,16 @@ import pandas as pd
 import torch
 import glob
 import os
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 
 
-class UrbanSoundDataset(Dataset):
+def rollT(x, n):
+    return torch.cat((x[-n:], x[:-n]))
 
-    def __init__(self, datapath, transforms, model_mode, sample_len=1 * 5000):
+
+class UrbanSoundDataset2D_aug(Dataset):
+
+    def __init__(self, datapath, transforms, model_mode, sample_len=6 * 5000):
         self.model_mode = model_mode
         self.sample_len = sample_len
         self.path = datapath
@@ -28,18 +32,29 @@ class UrbanSoundDataset(Dataset):
             print('WARNING: the train_or_test argument should be a string <train> or <test> ')
             1 / 0
 
-
     def __getitem__(self, index):
         sampleID = self.files[index].split(os.sep)[-1].split('.')[0]
         sample, sr = lb.load(self.files[index], sr=5000, mono=True)
-        sample = sample - np.mean(sample)
-        sample = sample / np.std(sample)
+
+        sample = sample[:int(self.sample_len / 2)]
         if len(sample) < self.sample_len:
-            sample = np.insert(sample, len(sample), np.zeros(self.sample_len - len(sample)))
+            tmplen = len(sample)
+            sample = np.insert(sample, 0, np.zeros(1 + int(0.5 * (self.sample_len - tmplen))))
+            sample = np.insert(sample, len(sample), np.zeros(1 + int(0.5 * (self.sample_len - tmplen))))
         if len(sample) > self.sample_len:
             sample = sample[:self.sample_len]
+        roll_len_max = int(self.sample_len / 4)
+
+        roll_len = int((np.random.uniform() * 2 - 1) * roll_len_max)
         sample = torch.FloatTensor(sample)
-        sample = np.expand_dims(sample, 0)
+        sample = rollT(sample, roll_len)
+
+        sample = lb.power_to_db(lb.feature.melspectrogram(sample.numpy(), 5000, fmax=2500, n_fft=1024, hop_length=256),
+                                ref=np.max)
+        sample = sample - np.mean(sample)
+        sample = sample / np.std(sample)
+        sample = torch.FloatTensor(sample)
+        sample = sample[None]
 
         if self.transforms:
             sample = self.transforms(sample)
@@ -49,7 +64,7 @@ class UrbanSoundDataset(Dataset):
             label = torch.LongTensor([label])[0][0]
             return (sample, label)
         else:
-            return(sample, sampleID)
+            return (sample, sampleID)
 
     def __len__(self):
         return self.len

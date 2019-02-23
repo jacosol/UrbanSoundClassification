@@ -6,10 +6,12 @@ import glob
 import os
 from torch.utils.data import Dataset
 
+def rollT(x, n):
+    return torch.cat((x[-n:], x[:-n]))
 
-class UrbanSoundDataset(Dataset):
+class UrbanSoundDataset_aug(Dataset):
 
-    def __init__(self, datapath, transforms, model_mode, sample_len=1 * 5000):
+    def __init__(self, datapath, transforms, model_mode, sample_len=6 * 5000):
         self.model_mode = model_mode
         self.sample_len = sample_len
         self.path = datapath
@@ -34,11 +36,19 @@ class UrbanSoundDataset(Dataset):
         sample, sr = lb.load(self.files[index], sr=5000, mono=True)
         sample = sample - np.mean(sample)
         sample = sample / np.std(sample)
+        sample = sample[:int(self.sample_len/2)]
         if len(sample) < self.sample_len:
-            sample = np.insert(sample, len(sample), np.zeros(self.sample_len - len(sample)))
+            tmplen = len(sample)
+            sample = np.insert(sample, 0, np.zeros(1+int(0.5 * (self.sample_len - tmplen) )))
+            sample = np.insert(sample, len(sample), np.zeros(1+int(0.5 * (self.sample_len - tmplen) )))
         if len(sample) > self.sample_len:
             sample = sample[:self.sample_len]
+        roll_len_max = int(self.sample_len/4)
+
+        roll_len = int( (np.random.uniform()*2 -1) *roll_len_max )
         sample = torch.FloatTensor(sample)
+        sample = rollT(sample, roll_len)
+
         sample = np.expand_dims(sample, 0)
 
         if self.transforms:

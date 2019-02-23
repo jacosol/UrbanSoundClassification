@@ -1,4 +1,4 @@
-from UrbanSoundDataset import *
+from UrbanSoundDataset_aug import *
 import torch
 import os
 import numpy as np
@@ -30,9 +30,9 @@ classes = ['air_conditioner',
 
 # load the model
 #loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\Mon_Feb_18_203600_2019'
-loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\Tue_Feb_19_173459_2019_1DCNN_twoMORELAYERandDO'
+loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\Thu_Feb_21_173206_2019_1DCNN_3layers_shorteersmaples'
 #loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\Mon_Feb_18_160248_2019'
-modelname = 'model_epoch_13.pt'
+modelname = 'model_epoch_31.pt'
 model = os.path.join(loadpath, modelname)
 model = torch.load(model)
 model.to('cuda')
@@ -41,7 +41,7 @@ print(model)
 model.eval()
 
 datapath = r'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\submission_dataset'
-DS = UrbanSoundDataset(datapath, None, 'submission')
+DS = UrbanSoundDataset_aug(datapath, None, 'submission')
 
 batch_size = 10
 

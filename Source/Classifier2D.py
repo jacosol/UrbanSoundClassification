@@ -1,20 +1,17 @@
 import torch.nn.functional as F
 from torch import nn
 
-class Classifier1D(nn.Module):
+class Classifier2D(nn.Module):
 
     def __init__(self):
-        super(Classifier1D, self).__init__()
-        self.conv1 = nn.Conv1d(1, 8, 9, padding=4)
-        self.conv2 = nn.Conv1d(8, 16, 5, padding=2)
-        self.conv3 = nn.Conv1d(16, 32, 5, padding=2)
-        self.conv4 = nn.Conv1d(32, 64, 5, padding=2)
-        # self.conv4 = nn.Conv1d(64, 128, 5, padding=2)
-        # self.conv5 = nn.Conv1d(128, 256, 5, padding=2)
-
-        self.pool = nn.MaxPool1d(4, 4)
+        super(Classifier2D, self).__init__()
+        self.conv1 = nn.Conv2d(1, 8, 9, padding=4)
+        self.conv2 = nn.Conv2d(8, 16, 5, padding=2)
+        self.conv3 = nn.Conv2d(16, 32, 5, padding=2)
+        self.conv4 = nn.Conv2d(32, 64, 5, padding=2)
+        self.pool = nn.MaxPool2d(2, 2)
         # linear layer
-        self.fc1 = nn.Linear(int(7488), 300)
+        self.fc1 = nn.Linear(int(3584), 300)
         # linear layer (500 -> 10)
         self.fc2 = nn.Linear(300, 10)
         # dropout layer (p=0.25)

@@ -1,5 +1,5 @@
-from UrbanSoundDataset_aug import *
-from Classifier1D import *
+from UrbanSoundDataset2D_aug import *
+from Classifier2D import *
 import torch
 import os
 import numpy as np
@@ -16,8 +16,8 @@ import tkinter.filedialog
 # root.destroy()
 
 # load the model
-loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings\Sat_Feb_23_115808_2019_1DCNN_longersamples'
-modelname= 'model_epoch_4.pt'
+loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings2D\Sat_Feb_23_165712_2019_1DCNN_longersamples'
+modelname= 'model_epoch_1.pt'
 model = os.path.join(loadpath, modelname)
 model = torch.load(model)
 model.to('cuda')
@@ -28,7 +28,7 @@ model.eval()
 test_idx = np.load(os.path.join(loadpath, 'test_idx.npy'))
 
 trainpath = r'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\train'
-DS = UrbanSoundDataset_aug(trainpath, None, 'train')
+DS = UrbanSoundDataset2D_aug(trainpath, None, 'train')
 
 batch_size = 10
 test_sampler = SubsetRandomSampler(test_idx)
