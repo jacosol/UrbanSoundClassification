@@ -16,8 +16,8 @@ import tkinter.filedialog
 # root.destroy()
 
 # load the model
-loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings2D\Sat_Feb_23_165712_2019_1DCNN_longersamples'
-modelname= 'model_epoch_1.pt'
+loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings2D\Sun_Feb_24_143840_2019_1DCNN_longersamples'
+modelname= 'model_epoch_20.pt'
 model = os.path.join(loadpath, modelname)
 model = torch.load(model)
 model.to('cuda')
@@ -25,7 +25,7 @@ print(model)
 print(modelname)
 model.eval()
 
-test_idx = np.load(os.path.join(loadpath, 'test_idx.npy'))
+test_idx = np.load(os.path.join(loadpath, 'val_idx.npy'))
 
 trainpath = r'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\train'
 DS = UrbanSoundDataset2D_aug(trainpath, None, 'train')
