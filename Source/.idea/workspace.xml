@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c98b7d1b-d638-4f22-8e77-bcee8a07841b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../IpythonNotebooks/.ipynb_checkpoints/DatasetHandsOn-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/../IpythonNotebooks/.ipynb_checkpoints/DatasetHandsOn-checkpoint.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../IpythonNotebooks/DatasetHandsOn.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/../IpythonNotebooks/DatasetHandsOn.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/submission_script.py" beforeDir="false" afterPath="$PROJECT_DIR$/submission_script.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing_model2D.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing_model2D.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train_script2D.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_script2D.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -39,12 +34,12 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="4471" />
+          <entry key="py" value="4473" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="4471" />
+          <entry key="Python" value="4473" />
         </counts>
       </usages-collector>
     </session>

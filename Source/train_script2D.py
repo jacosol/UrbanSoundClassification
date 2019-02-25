@@ -11,7 +11,7 @@ from torch.utils.data.sampler import SubsetRandomSampler
 import time
 
 trainpath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\Data\\train'
-savepath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings2D\\' + ''.join('_'.join(time.ctime().split()).split(':')) + '_1DCNN_longersamples'
+savepath = 'C:\\Users\\Copo\\source\\repos\\UrbanSoundClassification\\trainings2D\\' + ''.join('_'.join(time.ctime().split()).split(':')) + '_2D_CNN_onemorelayer'
 resume = 0
 if not resume:
     try:
