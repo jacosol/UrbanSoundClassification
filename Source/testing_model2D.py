@@ -16,8 +16,8 @@ import tkinter.filedialog
 # root.destroy()
 
 # load the model
-loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings2D\Sun_Feb_24_143840_2019_1DCNN_longersamples'
-modelname= 'model_epoch_20.pt'
+loadpath = r'C:\Users\Copo\source\repos\UrbanSoundClassification\trainings2D\Mon_Feb_25_103032_2019_2D_CNN_onemorelayer'
+modelname= 'model_epoch_33.pt'
 model = os.path.join(loadpath, modelname)
 model = torch.load(model)
 model.to('cuda')
